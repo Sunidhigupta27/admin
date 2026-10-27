@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { APP_NAME, FOLLOWER_APIS, PLATFORMS, TIERS, formatCount } from "@/lib/config";
+import { TIERS, formatCount } from "@/lib/config";
 import { ADMIN_SECTIONS } from "@/components/admin/AdminSidebar";
 
 /**
@@ -10,18 +9,6 @@ import { ADMIN_SECTIONS } from "@/components/admin/AdminSidebar";
  *   onRefresh()            – reload users, ads and social accounts
  */
 export default function AdminSettings({ profile, uid, prefs, onPrefs, onRefresh, refreshing }) {
-  const [copied, setCopied] = useState(false);
-
-  async function copyUid() {
-    try {
-      await navigator.clipboard.writeText(uid);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch {
-      /* clipboard blocked: the id is still visible to select by hand */
-    }
-  }
-
   return (
     <div className="set-grid">
       <section className="dcard set-card">
@@ -29,18 +16,7 @@ export default function AdminSettings({ profile, uid, prefs, onPrefs, onRefresh,
         <dl className="set-dl">
           <div><dt>Email</dt><dd>{profile.email}</dd></div>
           <div><dt>Role</dt><dd><span className="role-tag rt-admin">admin</span></dd></div>
-          <div>
-            <dt>User ID</dt>
-            <dd className="set-uid">
-              <code>{uid}</code>
-              <button type="button" className="clear-btn" onClick={copyUid}>{copied ? "Copied" : "Copy"}</button>
-            </dd>
-          </div>
         </dl>
-        <p className="set-note">
-          To add another admin: have them sign up, then in Firebase console → Firestore → <code>users</code> → their
-          document, set <code>role</code> to <code>admin</code>.
-        </p>
       </section>
 
       <section className="dcard set-card">
@@ -85,30 +61,8 @@ export default function AdminSettings({ profile, uid, prefs, onPrefs, onRefresh,
       </section>
 
       <section className="dcard set-card">
-        <h2>Follower-count APIs</h2>
-        <p className="set-note">
-          Used on the enrolment page to fetch follower counts. To change one, set the matching{" "}
-          <code>NEXT_PUBLIC_*_FOLLOWERS_API</code> variable in <code>.env.local</code> and redeploy.
-        </p>
-        <ul className="set-apis">
-          {PLATFORMS.map((p) => (
-            <li key={p.id}>
-              <span className={`mini-badge sb-${p.id}`} aria-hidden="true">{p.label[0]}</span>
-              <span>
-                <strong>{p.label}</strong>
-                <code className="sub-cell">{FOLLOWER_APIS[p.id]}</code>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="dcard set-card">
         <h2>Follower tiers</h2>
-        <p className="set-note">
-          A creator&apos;s tier comes from their biggest account. Edit <code>TIERS</code> in{" "}
-          <code>lib/config.js</code> to change them.
-        </p>
+        <p className="set-note">A creator&apos;s tier comes from their biggest account.</p>
         <ul className="set-tiers">
           {TIERS.map((t, i) => {
             const next = TIERS[i + 1];
@@ -120,7 +74,6 @@ export default function AdminSettings({ profile, uid, prefs, onPrefs, onRefresh,
             );
           })}
         </ul>
-        <p className="set-note">App name shown in the sidebar: <strong>{APP_NAME}</strong> (<code>APP_NAME</code> in <code>lib/config.js</code>).</p>
       </section>
     </div>
   );
